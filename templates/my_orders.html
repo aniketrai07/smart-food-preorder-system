@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 class="mb-2">My Orders</h3>
+<p class="small-muted">Track your pre-orders and slot timing.</p>
+
+{% if orders|length == 0 %}
+  <div class="alert alert-warning card-soft">No orders yet.</div>
+  <a class="btn btn-primary" href="{{ url_for('menu') }}">Order Now</a>
+{% else %}
+
+<div class="card-soft p-3">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Slot</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td class="fw-semibold">#{{ o.id }}</td>
+        <td>{{ o.slot_label }}</td>
+        <td>₹{{ o.total_amount }}</td>
+        <td><span class="badge text-bg-secondary">{{ o.status }}</span></td>
+        <td class="small-muted">{{ o.created_at }}</td>
+        <td>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('order_detail', order_id=o.id) }}">View</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="hero">
+  <h2 class="mb-2">Smart Food Stall Pre-Ordering System</h2>
+  <p class="small-muted mb-3">
+    Pre-order your food, select a break time slot, and avoid crowd congestion.
+  </p>
+
+  <div class="d-flex flex-wrap gap-2">
+    <span class="badge-soft">✅ Real-time demand</span>
+    <span class="badge-soft">✅ Peak time display</span>
+    <span class="badge-soft">✅ Slot capacity control</span>
+    <span class="badge-soft">✅ Order status tracking</span>
+  </div>
+
+  <div class="mt-4">
+    <a class="btn btn-primary" href="{{ url_for('menu') }}">Start Ordering</a>
+    {% if not session.get("user_id") %}
+      <a class="btn btn-outline-dark" href="{{ url_for('login') }}">Login</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-3 mt-3">
+  <div class="col-md-4">
+    <div class="p-3 card-soft">
+      <h5>Student</h5>
+      <p class="small-muted mb-0">Choose items, pick time slot, get ready notification.</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="p-3 card-soft">
+      <h5>Stall/Admin</h5>
+      <p class="small-muted mb-0">Track peak slots, manage menu, update order status.</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="p-3 card-soft">
+      <h5>Optimization</h5>
+      <p class="small-muted mb-0">Slot capacity reduces waiting and crowd congestion.</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

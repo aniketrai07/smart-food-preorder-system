@@ -1,0 +1,54 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'student' -- student/admin
+);
+
+CREATE TABLE IF NOT EXISTS stalls (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS menu_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  stall_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  price INTEGER NOT NULL,
+  category TEXT,
+  is_available INTEGER NOT NULL DEFAULT 1,
+  prep_minutes INTEGER NOT NULL DEFAULT 5,
+  FOREIGN KEY (stall_id) REFERENCES stalls(id)
+);
+
+CREATE TABLE IF NOT EXISTS time_slots (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  label TEXT NOT NULL,
+  start_time TEXT NOT NULL,
+  end_time TEXT NOT NULL,
+  max_orders INTEGER NOT NULL DEFAULT 20
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  stall_id INTEGER NOT NULL,
+  slot_id INTEGER NOT NULL,
+  total_amount INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'Pending',
+  created_at TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (stall_id) REFERENCES stalls(id),
+  FOREIGN KEY (slot_id) REFERENCES time_slots(id)
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  order_id INTEGER NOT NULL,
+  item_id INTEGER NOT NULL,
+  qty INTEGER NOT NULL,
+  price_each INTEGER NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id),
+  FOREIGN KEY (item_id) REFERENCES menu_items(id)
+);

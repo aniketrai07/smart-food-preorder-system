@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 class="mb-2">Admin Menu Management</h3>
+<p class="small-muted">Add items, toggle availability, delete items.</p>
+
+<div class="card-soft p-3 mb-3">
+  <h5>Add New Item</h5>
+  <form method="post" action="{{ url_for('admin_menu_add') }}">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <input class="form-control" name="name" placeholder="Item name" required>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" name="price" placeholder="Price" required>
+      </div>
+      <div class="col-md-3">
+        <input class="form-control" name="category" placeholder="Category (Snacks/Drinks)" required>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" name="prep_minutes" placeholder="Prep (min)" required>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-success w-100">Add</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="card-soft p-3">
+  <h5 class="mb-2">Current Menu</h5>
+
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Prep</th>
+        <th>Availability</th>
+        <th width="240">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td class="fw-semibold">{{ it.name }}</td>
+        <td>{{ it.category }}</td>
+        <td>₹{{ it.price }}</td>
+        <td>{{ it.prep_minutes }} min</td>
+        <td>
+          {% if it.is_available == 1 %}
+            <span class="badge text-bg-success">Available</span>
+          {% else %}
+            <span class="badge text-bg-danger">Out</span>
+          {% endif %}
+        </td>
+        <td class="d-flex gap-2">
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_menu_toggle', item_id=it.id) }}">
+            Toggle
+          </a>
+          <a class="btn btn-sm btn-outline-danger" href="{{ url_for('admin_menu_delete', item_id=it.id) }}">
+            Delete
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

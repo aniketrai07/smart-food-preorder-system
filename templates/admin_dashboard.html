@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 class="mb-2">Admin Dashboard</h3>
+<p class="small-muted">Track demand, peak slots, and manage order flow.</p>
+
+<div class="row g-3">
+  <div class="col-md-5">
+    <div class="card-soft p-3">
+      <h5 class="mb-2">Peak Time Slots</h5>
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Slot</th>
+            <th width="150">Orders</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in slot_stats %}
+            {% set percent = (s.orders_count * 100) // s.max_orders %}
+            <tr>
+              <td>{{ s.label }}</td>
+              <td>
+                <span class="fw-semibold">{{ s.orders_count }}/{{ s.max_orders }}</span>
+                {% if percent >= 80 %}
+                  <span class="text-danger">Peak</span>
+                {% elif percent >= 50 %}
+                  <span class="text-warning">Busy</span>
+                {% else %}
+                  <span class="text-success">Low</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card-soft p-3">
+      <h5 class="mb-2">Latest Orders (Update Status)</h5>
+
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Slot</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th width="220">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in pending %}
+          <tr>
+            <td class="fw-semibold">#{{ o.id }}</td>
+            <td>{{ o.name }}</td>
+            <td>{{ o.slot_label }}</td>
+            <td>₹{{ o.total_amount }}</td>
+            <td><span class="badge text-bg-secondary">{{ o.status }}</span></td>
+            <td>
+              <form method="post" action="{{ url_for('admin_update_status', order_id=o.id) }}" class="d-flex gap-2">
+                <select class="form-select form-select-sm" name="status">
+                  {% for st in ["Pending","Accepted","Ready","Picked","Cancelled"] %}
+                    <option value="{{ st }}" {% if st==o.status %}selected{% endif %}>{{ st }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn btn-sm btn-primary">Update</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

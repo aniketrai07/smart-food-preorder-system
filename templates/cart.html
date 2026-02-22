@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 class="mb-2">Your Cart</h3>
+<p class="small-muted">Update quantities and select your break time slot.</p>
+
+{% if item_rows|length == 0 %}
+  <div class="alert alert-warning card-soft">Cart is empty. Add items from Menu.</div>
+  <a class="btn btn-primary" href="{{ url_for('menu') }}">Go to Menu</a>
+{% else %}
+
+<form method="post" action="{{ url_for('cart_update') }}">
+  <div class="card-soft p-3">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th width="120">Qty</th>
+          <th width="120">Price</th>
+          <th width="120">Total</th>
+          <th width="120"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in item_rows %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ r.item.name }}</div>
+            <div class="small-muted">{{ r.item.category or "General" }}</div>
+          </td>
+          <td>
+            <input class="form-control" type="number" min="0" name="qty_{{ r.item.id }}" value="{{ r.qty }}">
+          </td>
+          <td>₹{{ r.item.price }}</td>
+          <td class="fw-semibold">₹{{ r.line }}</td>
+          <td>
+            <a class="btn btn-sm btn-outline-danger" href="{{ url_for('cart_remove', item_id=r.item.id) }}">Remove</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="fw-bold fs-5">Grand Total: ₹{{ total }}</div>
+    <button class="btn btn-outline-primary">Update Cart</button>
+  </div>
+</form>
+
+<div class="card-soft p-3 mt-3">
+  <h5>Select Time Slot</h5>
+  <p class="small-muted mb-2">Slots have maximum capacity to reduce crowd congestion.</p>
+
+  <form method="post" action="{{ url_for('checkout') }}">
+    <div class="row g-2">
+      <div class="col-md-8">
+        <select class="form-select" name="slot_id" required>
+          {% for s in slots %}
+            {% set filled = s.filled %}
+            {% set percent = (filled * 100) // s.max_orders %}
+            <option value="{{ s.id }}" {% if filled >= s.max_orders %}disabled{% endif %}>
+              {{ s.label }} — {{ filled }}/{{ s.max_orders }}
+              {% if filled >= s.max_orders %}(Full){% elif percent >= 80 %}(Peak){% elif percent >= 50 %}(Busy){% else %}(Low){% endif %}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-success w-100">Place Order</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endif %}
+
+{% endblock %}
